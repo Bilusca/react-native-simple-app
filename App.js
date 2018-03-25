@@ -11,6 +11,7 @@ import {
   Text,
   View,
   ScrollView,
+  AsyncStorage,
   TouchableOpacity
 } from 'react-native';
 
@@ -22,6 +23,14 @@ export default class App extends Component {
     modalVisible: false,
     repos: []
   };
+
+  async componentDidMount() {
+    const repos = JSON.parse(await AsyncStorage.getItem('@Minicurso:repositories')) || [];
+
+    this.setState({
+      repos
+    })
+  }
 
   _addRepository = async (newRepoText) => {
     const repoCall = await fetch(`https://api.github.com/repos/${newRepoText}`);
@@ -41,6 +50,8 @@ export default class App extends Component {
         repository
       ]
     })
+
+    await AsyncStorage.setItem('@Minicurso:repositories', JSON.stringify(this.state.repos))
   }
 
   render() {
